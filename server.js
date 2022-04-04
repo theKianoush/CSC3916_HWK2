@@ -13,7 +13,7 @@ var authJwtController = require('./auth_jwt');
 db = require('./db')(); //hack
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
-require('dotenv').config();
+//require('dotenv').config();
 
 var app = express();
 app.use(cors());
@@ -127,13 +127,10 @@ router.route('/movies')
 
 
 
-router.all('*', function(req, res){
-    res.status(401).send({success: false, msg: 'HTTP method not supported.'});
-});
 
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
-module.exports = app; // for testing only
+//module.exports = app; // for testing only
 
 
