@@ -13,6 +13,7 @@ var authJwtController = require('./auth_jwt');
 db = require('./db')(); //hack
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
+require('dotenv').config();
 
 var app = express();
 app.use(cors());
@@ -123,6 +124,12 @@ router.route('/movies')
             res.send(JSON.stringify({status: res.statusCode, msg: "Get movies", headers: o.headers, query: req.query, host: o.key }));
         }
     );
+
+
+
+router.all('*', function(req, res){
+    res.status(401).send({success: false, msg: 'HTTP method not supported.'});
+});
 
 
 app.use('/', router);
