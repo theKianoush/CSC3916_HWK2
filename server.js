@@ -97,7 +97,7 @@ router.route('/movies')
     // saving a movie
     .post(authJwtController.isAuthenticated, function (req, res) {
         //console.log(req.body);
-        if (!req.body.title || !req.body.year || !req.body.genre || !req.body.actors || req.body.actors < 3) {
+        if (!req.body.title || !req.body.year || !req.body.genre || !req.body.actors ) {
             res.json({success: false, message: "An input should contian: Title, year released, Genre, and 3 Actors"});
         } else {
 
