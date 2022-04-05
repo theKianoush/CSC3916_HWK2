@@ -149,6 +149,7 @@ router.route('/movies')
                     if(err){
                         res.status(403).json({success:false, message: "Error: Could not make a change."});
                     }else{
+                        req.body.genre = req.body.newGenre;
                         res.status(200).json({success: true, message: "Genre has been updated successfully"});
                     }
                 });
