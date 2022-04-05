@@ -108,8 +108,7 @@ router.route('/movies')
             movie.genre = req.body.genre;
             movie.actors = req.body.actors;
 
-            res.json({success: true, msg: 'Movie was saved successfuly.'});
-
+            console.log(Movie);
             movie.save(function(err){
 
                 if (err) {
