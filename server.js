@@ -179,13 +179,13 @@ router.route('/movies')
     .get(authJwtController.isAuthenticated, function (req, res){
 
 
-    Movie.find({title: req.params.title},function(err, movies){
+    Movie.find(function(err, movie){
         if (err){
             res.json({success: false, message: "Could not get movies."});
         }
 
         else{
-            res.json(movies)
+            res.json(movie)
         }
 
 
