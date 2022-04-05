@@ -9,9 +9,9 @@ chai.should();
 chai.use(chaiHttp);
 
 let login_details = {
-    name: 'test',
-    username: 'email@email.com',
-    password: '123@abc'
+    name: 'kian',
+    username: 'kianranjbar@email.com',
+    password: '123andabc'
 }
 
 describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth', () => {
@@ -24,7 +24,7 @@ describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth'
 
     after((done) => { //after this test suite empty the database
        // db.userList = [];
-        User.deleteOne({ name: 'test'}, function(err, user) {
+        User.deleteOne({ name: 'kian'}, function(err, user) {
             if (err) throw err;
         });
         done();
@@ -41,20 +41,22 @@ describe('Register, Login and Call Test Collection with Basic Auth and JWT Auth'
                 res.should.have.status(200);
                 res.body.success.should.be.eql(true);
                 //follow-up to get the JWT token
-                chai.request(server)
-                    .post('/signin')
-                    .send(login_details)
-                    .end((err, res) => {
-                        res.should.have.status(200);
-                        res.body.should.have.property('token');
 
-                        let token = res.body.token;
-                        console.log(token);
-                        done();
-
-
-                    })
               })
+
+            chai.request(server)
+                .post('/signin')
+                .send(login_details)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.have.property('token');
+
+                    let token = res.body.token;
+                    console.log(token);
+                    done();
+
+
+                })
         })
     });
 

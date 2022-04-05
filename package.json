@@ -28,7 +28,7 @@
     "express": "^4.17.3",
     "http": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.10",
+    "mongoose": "^5.11.18",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0"

@@ -60,9 +60,8 @@ router.post('/signup', function(req, res) {
             }
 
             res.json({success: true, msg: 'Successfully created new user.'})
-        })
+        });
 
-        db.save(newUser); //no duplicate checking
 
     }
 });
@@ -76,13 +75,13 @@ router.post('/signin', function (req, res) {
         if (err) {
             res.send(err);
         }
-
-        user.comparePassword(userNew.password, function (ismatch) {
+        user.comparePassword(userNew.password, function(isMatch) {
             if (isMatch) {
                 var userToken = {id: user.id, username: user.username};
                 var token = jwt.sign(userToken, process.env.SECRET_KEY);
                 res.json({success: true, token: 'JWT ' + token});
-            } else {
+            }
+            else {
                 res.status(401).send({success: false, msg: 'Authentication failed.'});
             }
         })
@@ -147,6 +146,7 @@ router.route('/movies')
 
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
+//module.exports = app; // for testing only
 module.exports = app; // for testing only
 
 
