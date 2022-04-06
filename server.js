@@ -180,7 +180,16 @@ router.route('/movies')
             }
             else{
                 if (movie === null){
-                    res.json({success : false, msg: "no movie exists"})
+                    //res.json({success : false, msg: "no movie exists"})
+                    Movie.find({}, function (err, movies) {
+                        if (err) throw err;
+                        else
+                            // console.log(movies);
+                            // res = res.status(200);
+                            // res.json({success: true, msg: 'GET movies.'});
+                            res.json(movies);
+                    });
+
                 }else{
                     if(req.body.review === 'true'){
                         Review.find({movieID: movie.id}).select('nameOfReviewer comment rating').exec(function (err, review){
