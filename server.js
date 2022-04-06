@@ -157,42 +157,57 @@ router.route('/movies')
         }
     })
 
-    // deleting a movie
+    //Delete movies
     .delete(authJwtController.isAuthenticated, function(req, res) {
-        if(!req.body.title){
-            res.json({success:false, message: "Please provide a title to delete"});
-        }else{
-            Movie.findOneAndDelete(req.body.title, function(err, movie) {
-                if(err){
-                    res.status(403).json({success:false, message: "Error: Could not delete this movie"});
-                }else if(!movie){
-                    res.status(403).json({success: false, message: "Error: No movie matches this movie, does not exist."});
-                }else {
-                    res.status(200).json({success: true, message: "Movie was deleted successfuly"});
-                }
-            })
+        if (!req.body.title) {
+            res.json({success: false, msg: 'Please pass a Movie Title to delete.'});
         }
-
+        else {
+            Movie.findOneAndRemove({title: req.body.title}, function (err) {
+                if (err) throw err;
+                res.json({success: true, msg: 'Movie successfully deleted.'});
+            })
+            //}
+            //})
+        }
     })
 
     // getting a movie
+    .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
+        Movie.findOne({title: req.body.title}).select('title image genre release characters').exec(function(err, movie){
+            if(err){
+                res.json({message: "Error Finding Movie"})    // if we cant find movie or some error
+            }
+            else{
+                if (movie === null){
+                    res.json({success : false, msg: "no movie exists"})
+                }else{
+                    if(req.body.review === 'true'){
+                        Review.find({movieID: movie.id}).select('nameOfReviewer comment rating').exec(function (err, review){
+                            if(err){
+                                return res.status(403).json({success: false, msg: "Cant Get Reviews"})
+                            }
+                            var rating = movie.avgRating.reduce(function(a,b){ return a+b;})
+                            return res.status(200).json({ movieDetails: movie, Movie_Review : review, avgRating : "rating"})
 
-    .get(authJwtController.isAuthenticated, function (req, res){
-
-
-    Movie.find(function(err, movie){
-        if (err){
-            res.json({success: false, message: "Could not get movies."});
-        }
-
-        else{
-            res.json(movie)
-        }
-
-
+                        })
+                    }
+                    else{res.status(200).json({success: true, msg :'movie found', movieDetails : movie})}         // else return the movie}
+                }
+            }
+        })
     });
 
-});
+
+
+
+
+
+
+
+
+
+
 
 
 router.route('/reviews')
