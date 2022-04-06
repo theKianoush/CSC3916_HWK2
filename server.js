@@ -172,7 +172,7 @@ router.route('/movies')
         }
     })
 
-    // getting a movie with parameter
+    // getting a movie with parameter and without
     .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
         Movie.findOne({title: req.body.title}).select('title image genre release characters').exec(function(err, movie){
             if(err){
@@ -209,16 +209,7 @@ router.route('/movies')
                 }
             }
         })
-    })
-
-
-
-
-    .get(authJwtController.isAuthenticated, function (req,res){
-
-});
-
-
+    });
 
 
 
