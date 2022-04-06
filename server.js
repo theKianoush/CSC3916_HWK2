@@ -198,8 +198,8 @@ router.route('/movies/:id')
 
     .delete(authJwtController.isAuthenticated, function(req, res) {
 
-            console.log(req.params._id);
-        res.json(req.params._id);
+            console.log(req.params.id);
+        res.json(req.params.id);
     })
 
 
