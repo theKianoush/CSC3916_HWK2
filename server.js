@@ -13,6 +13,7 @@ var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var User = require('./Users');
 var Movie = require('./Movies');
+var Review = require('./Reviews');
 //require('dotenv').config();
 
 var app = express();
@@ -192,6 +193,73 @@ router.route('/movies')
     });
 
 });
+
+
+router.route('/reviews')
+    .post(authJwtController.isAuthenticated, function (req, res) {
+        console.log(req.body);
+        if(!req.body.quote || !req.body.rating || !req.body.movieid){
+            console.log("Reviewer name, Quote, Rating, or Movie not found!");
+            res.json({success: false, message: "Reviewer name, Quote, Rating, or Movie not found!"});
+        }
+
+        else{
+
+            const userToken = req.headers.authorization;
+            const token = userToken.split(' ');
+            const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
+            console.log(decoded);
+
+            const id = req.body.movieid;
+
+            Movie.findById(id, function(err, okay) {
+                if (err) {
+                    res.json({success: false, message: "Error. Movie doesn't exist"});
+                }
+                else if (okay) {
+
+                    var review = new Review();
+                    review.movieid = req.body.movieid;
+                    review.reviewer = decoded.username;
+                    review.quote = req.body.quote;
+                    review.rating = req.body.rating;
+
+
+                    review.save(function (err){
+
+                        if(err){
+                            console.log(err);
+                            res.json({success: false, message: "Error. You cannot make multiple reviews for same movie!"})
+                        }
+
+                        else{
+                            res.json({success: true, message: "Review saved"});
+                        }
+                    });
+                }
+
+            });
+        }
+
+    })
+
+    .get(authJwtController.isAuthenticated, function (req, res){
+        console.log(req.body);
+
+        Review.find(function(err, review){
+            if (err){
+                res.json({success: false, message: "Could not get reviews."});
+            }
+
+            else{
+                res.json(review)
+            }
+
+
+        });
+
+    });
+
 
 
 app.use('/', router);
