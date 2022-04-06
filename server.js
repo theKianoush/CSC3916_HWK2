@@ -231,9 +231,9 @@ router.route('/movies/:id')
 
     //GET = is supposed to get movie with parameter
     .get(authJwtController.isAuthenticated, function (req,res) {
-        const movie = new Movie();
 
-        Movie.findById(req.params.id, movie, function (err) {
+
+        Movie.findById(req.params.id, function (err, movie)  {
             if (err) {
                 res.send(err);
                 console.log(err);
