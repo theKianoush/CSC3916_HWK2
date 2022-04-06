@@ -199,7 +199,7 @@ router.route('/movies/:id')
     .delete(authJwtController.isAuthenticated, function(req, res) {
 
          //   console.log(req.params.id);
-        res.json(req.params.id);
+        //res.json(req.params.id);
 
 
 
