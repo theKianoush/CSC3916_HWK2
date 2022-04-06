@@ -172,7 +172,7 @@ router.route('/movies')
         }
     })
 
-    // getting a movie with parameter and without
+    // getting a movie with parameter
     .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
         Movie.findOne({title: req.body.title}).select('title image genre release characters').exec(function(err, movie){
             if(err){
@@ -180,20 +180,7 @@ router.route('/movies')
             }
             else{
                 if (movie === null){
-                    Movie.find(function(err, movies))  {
-                        if (err) {
-                            console.log(err);
-                            res.send(err);
-                        }
-
-                        var movieMap = {};
-
-                        movies.forEach(function(movie) {
-                            movieMap[movie._id] = movie;
-                        })
-
-                        res.json({success: true, movies: movieMap});
-                    })
+                    res.json({success : false, msg: "no movie exists"})
                 }else{
                     if(req.body.review === 'true'){
                         Review.find({movieID: movie.id}).select('nameOfReviewer comment rating').exec(function (err, review){
@@ -209,7 +196,9 @@ router.route('/movies')
                 }
             }
         })
-    });
+});
+
+
 
 
 
