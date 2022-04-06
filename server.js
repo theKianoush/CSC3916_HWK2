@@ -26,14 +26,14 @@ app.use(passport.initialize());
 
 var router = express.Router();
 
-mongoose.Promise = global.Promise;
-const uri = process.env.DB;
+//mongoose.Promise = global.Promise;
+//const uri = process.env.DB;
 
 
-mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}).
-catch(err => console.log(err));
+//mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}).
+//catch(err => console.log(err));
 
-console.log("connected to mongo atlas (users)");
+//console.log("connected to mongo atlas (users)");
 
 
 function getJSONObjectForMovieRequirement(req) {
@@ -207,6 +207,14 @@ router.route('/movies/:id')
                 }
             });
 
+    })
+
+
+
+    .delete(authJwtController.isAuthenticated, function(req, res) {
+
+            var id = req.params._id;
+            console.log(id);
     })
 
 
