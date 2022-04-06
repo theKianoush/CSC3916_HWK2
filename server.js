@@ -12,6 +12,7 @@ var authJwtController = require('./auth_jwt');
 var jwt = require('jsonwebtoken');
 var cors = require('cors');
 var User = require('./Users');
+var mongoose = require('mongoose')
 var Movie = require('./Movies');
 var Review = require('./Reviews');
 //require('dotenv').config();
@@ -24,6 +25,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 
 var router = express.Router();
+
+mongoose.Promise = global.Promise;
+const uri = process.env.DB;
+
+
+mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}).
+catch(err => console.log(err));
+
+console.log("connected to mongo atlas (users)");
+
 
 function getJSONObjectForMovieRequirement(req) {
     var json = {
@@ -184,10 +195,9 @@ router.route('/movies/:id')
 
     .delete(authJwtController.isAuthenticated, function(req, res) {
 
-            var id = req.params._id;
-
-        Movie.remove({_id:id}, function(err, movie) {
-                if (err) res.send(err);
+        Movie.findByIdAndRemove(req.params._id, function(err, movie) {
+                if (err) {res.send(err);}
+                res.json(req.params._id);
                 res.json({success: true, message: 'deleted'});
             });
 
