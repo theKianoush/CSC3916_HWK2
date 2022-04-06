@@ -155,41 +155,33 @@ router.route('/movies')
 //------------------------------------------------------------------------------------------
 
 
-// get a single movie by ID
-router.get('/movies/:id', (req,res) => {
-    const movie = new Movie();
 
-    Movie.findById(req.params._id, movie, function (err) {
-        if (err) {
-            res.send(err);
-            console.log(err);
-        }
 
-        res.json({success: true, movie: movie})
+
+
+router.route('/movies/:id')
+
+
+
+
+    // get a single movie by ID
+    .get(authJwtController.isAuthenticated, function (req,res) {
+        const movie = new Movie();
+
+        Movie.findById(req.params._id, movie, function (err) {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            }
+
+            res.json({success: true, movie: movie})
+        })
     })
-})
 
-router.put('/movies/:id', (req, res) => {
 
-    const movie = new Movie();
 
-    movie.Title = req.body.Title;
-    movie.YearReleased = req.body.YearReleased;
-    movie.Genre = req.body.Genre;
-    movie.Actors = req.body.Actors;
 
-    Movie.findByIdAndUpdate(req.params._id, movie, function (err) {
-        if (err) {
-            res.send(err);
-            console.log(err);
-        }
-
-        res.json({success:true, movieupdated: movie});
-    });
-
-});
-
-router.delete('/movies/:id', (req, res) => {
+    .delete(authJwtController.isAuthenticated, function(req, res) {
 
     Movie.findByIdAndDelete(req.params._id, function (err) {
         if (err) {
@@ -200,7 +192,42 @@ router.delete('/movies/:id', (req, res) => {
         res.json({success: true, message: "movie deleted"});
     });
 
-});
+    })
+
+
+
+
+
+    .put(authJwtController.isAuthenticated, function(req, res) {
+
+        const movie = new Movie();
+
+        movie.Title = req.body.Title;
+        movie.YearReleased = req.body.YearReleased;
+        movie.Genre = req.body.Genre;
+        movie.Actors = req.body.Actors;
+
+        Movie.findByIdAndUpdate(req.params._id, movie, function (err) {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            }
+
+            res.json({success:true, movieupdated: movie});
+        });
+
+    });
+
+
+
+
+
+
+
+
+
+
+
 
 
 
