@@ -180,7 +180,20 @@ router.route('/movies')
             }
             else{
                 if (movie === null){
-                    res.json({success : false, msg: "no movie exists"})
+                    Movie.find({function(err, movies)}  {
+                        if (err) {
+                            console.log(err);
+                            res.send(err);
+                        }
+
+                        var movieMap = {};
+
+                        movies.forEach(function(movie) {
+                            movieMap[movie._id] = movie;
+                        })
+
+                        res.json({success: true, movies: movieMap});
+                    })
                 }else{
                     if(req.body.review === 'true'){
                         Review.find({movieID: movie.id}).select('nameOfReviewer comment rating').exec(function (err, review){
@@ -196,11 +209,14 @@ router.route('/movies')
                 }
             }
         })
-    });
+    })
 
 
 
 
+    .get(authJwtController.isAuthenticated, function (req,res){
+
+});
 
 
 
