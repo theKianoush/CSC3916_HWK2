@@ -198,8 +198,23 @@ router.route('/movies/:id')
 
     .delete(authJwtController.isAuthenticated, function(req, res) {
 
-            console.log(req.params.id);
+         //   console.log(req.params.id);
         res.json(req.params.id);
+
+
+
+        Movie.findByIdAndDelete(req.params.id, function (err) {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            }
+
+            res.json({success: true, message: "movie deleted"});
+        });
+
+
+
+
     })
 
 
