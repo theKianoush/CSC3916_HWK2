@@ -180,7 +180,7 @@ router.route('/movies')
             }
             else{
                 if (movie === null){
-                    res.json(movies);
+                    res.json(movie);
                 }else{
                     if(req.body.review === 'true'){
                         Review.find({movieID: movie.id}).select('nameOfReviewer comment rating').exec(function (err, review){
