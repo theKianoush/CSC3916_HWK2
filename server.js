@@ -124,35 +124,46 @@ router.route('/movies')
 
 
 
-    //Update movies
+
     .put(authJwtController.isAuthenticated, function(req, res) {
-        if (!req.body.title) {
-            res.json({success: false, msg: 'Please pass a Movie Title to update.'});
-        } else {
-            Movie.findOne({title: req.body.title}, function (err, movies) {
+        var movie = new Movie();
+        movie.title = req.body.title;
+        movie.year = req.body.year;
+        movie.genre = req.body.genre;
+        movie.actors= req.body.actors;
+        if (Movie.find({title: movie.title}, function (err, m) {
+            movie.save(function (err, m) {
                 if (err) throw err;
                 else {
-                    //var movie = new Movie();
-                    movies.title = req.body.title;
-                    movies.yearReleased = req.body.yearReleased;
-                    movies.genre = req.body.genre;
-                    movies.actors = req.body.actors;
-                    movies.imageURL = req.body.imageURL;
-
-                    movies.save(function (err) {
-                        if (err) throw err;
-                        //else
-                        //console.log(movies);
-                        //res = res.status(200);
-                        res.json({success: true, msg: 'Movie successfully updated.'});
-                    })
+                    res = res.status(200);
+                    res.json({success: true, message: 'updated'});
                 }
-            })
-        }
+            });
+        }));
     })
 
 
 
+    .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
+        Movie.findOne({title: req.body.title}).exec(function(err, movie){
+            if(err){
+                res.json({message: "Error Finding Movie"})    // if we cant find movie or some error
+            }
+            else if (movie === null){
+                    Movie.find({}, function (err, movies) {
+                        if (err) throw err;
+                        else
+                            res.json(movies);
+                    })
+
+                }
+
+            else{
+                res.status(200).json({success: true, msg :'movie found', movieDetails : movie})       // else return the movie}
+                }
+
+        })
+    })
 
 
 
@@ -170,42 +181,7 @@ router.route('/movies')
             //}
             //})
         }
-    })
-
-    // getting a movie with parameter
-    .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
-        Movie.findOne({title: req.body.title}).select('title image genre release characters').exec(function(err, movie){
-            if(err){
-                res.json({message: "Error Finding Movie"})    // if we cant find movie or some error
-            }
-            else{
-                if (movie === null){
-                    //res.json({success : false, msg: "no movie exists"})
-                    Movie.find({}, function (err, movies) {
-                        if (err) throw err;
-                        else
-                            // console.log(movies);
-                            // res = res.status(200);
-                            // res.json({success: true, msg: 'GET movies.'});
-                            res.json(movies);
-                    });
-
-                }else{
-                    if(req.body.review === 'true'){
-                        Review.find({movieID: movie.id}).select('nameOfReviewer comment rating').exec(function (err, review){
-                            if(err){
-                                return res.status(403).json({success: false, msg: "Cant Get Reviews"})
-                            }
-                            var rating = movie.avgRating.reduce(function(a,b){ return a+b;})
-                            return res.status(200).json({ movieDetails: movie, Movie_Review : review, avgRating : "rating"})
-
-                        })
-                    }
-                    else{res.status(200).json({success: true, msg :'movie found', movieDetails : movie})}         // else return the movie}
-                }
-            }
-        })
-});
+    });
 
 
 
