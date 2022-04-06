@@ -191,7 +191,7 @@ router.route('/movies/:id')
                 res.json({success: true, message: 'deleted'});
             });
 
-    });
+    })
 
 
 
