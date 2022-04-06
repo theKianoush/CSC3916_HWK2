@@ -123,26 +123,21 @@ router.route('/movies')
     })
 
 
-
-
-    .put(authJwtController.isAuthenticated, function(req, res) {
-        var movie = new Movie();
-        movie.title = req.body.title;
-        movie.year = req.body.year;
-        movie.genre = req.body.genre;
-        movie.actors= req.body.actors;
-        if (Movie.find({title: movie.title}, function (err, m) {
-            movie.save(function (err, m) {
-                if (err) throw err;
-                else {
-                    res = res.status(200);
-                    res.json({success: true, message: 'updated'});
+    .put(authJwtController.isAuthenticated, function(req, res){
+        if(!req.body.title || !req.body.update){
+            res.json({success:false, message: "old title and new title required"});
+        }else{
+            Movie.findOneAndUpdate(req.body.title, req.body.update, function(err, movie) {
+                if(err){
+                    res.status(403).json({success:false, message: "cant update movie"});
+                }else if(!movie){
+                    res.status(403).json({success: false, message: "cant update movie"});
+                }else{
+                    res.status(200).json({success: true, message:"successfully updated movie title"});
                 }
             });
-        }));
+        }
     })
-
-
 
     .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
         Movie.findOne({title: req.body.title}).exec(function(err, movie){
