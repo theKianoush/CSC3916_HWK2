@@ -172,7 +172,7 @@ router.route('/movies')
         }
     })
 
-    // getting a movie
+    // getting a movie with parameter
     .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
         Movie.findOne({title: req.body.title}).select('title image genre release characters').exec(function(err, movie){
             if(err){
@@ -180,7 +180,7 @@ router.route('/movies')
             }
             else{
                 if (movie === null){
-                    res.json(movie);
+                    res.json({success : false, msg: "no movie exists"})
                 }else{
                     if(req.body.review === 'true'){
                         Review.find({movieID: movie.id}).select('nameOfReviewer comment rating').exec(function (err, review){
