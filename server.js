@@ -94,11 +94,26 @@ router.post('/signin', function (req, res) {
 
 
 
-// movie routes
+//------------------------------------------------------------------------------------------------------------------
+
+
 router.route('/movies')
-    // saving a movie
+
+
+    // GET = supposed to return all movies when no parameters are entered
+    .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
+        Movie.find({}, function (err, movies) {
+            if (err) throw err;
+            else
+                res.json(movies);
+        })
+
+    })
+
+
+
+    // POST = supposed to save a single movie to database
     .post(authJwtController.isAuthenticated, function (req, res) {
-        //console.log(req.body);
         if (!req.body.title || !req.body.year || !req.body.genre || !req.body.actors ) {
             res.json({success: false, message: "An input should contian: Title, year released, Genre, and 3 Actors"});
         } else {
@@ -123,133 +138,76 @@ router.route('/movies')
     })
 
 
-    .put(authJwtController.isAuthenticated, function(req, res){
-        if(!req.body.title || !req.body.update){
-            res.json({success:false, message: "old title and new title required"});
-        }else{
-            Movie.findOneAndUpdate(req.body.title, req.body.update, function(err, movie) {
-                if(err){
-                    res.status(403).json({success:false, message: "cant update movie"});
-                }else if(!movie){
-                    res.status(403).json({success: false, message: "cant update movie"});
-                }else{
-                    res.status(200).json({success: true, message:"successfully updated movie title"});
-                }
-            });
-        }
-    })
-
-    .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
-        Movie.findOne({title: req.body.title}).exec(function(err, movie){
-            if(err){
-                res.json({message: "Error Finding Movie"})    // if we cant find movie or some error
-            }
-            else if (movie === null){
-                    Movie.find({}, function (err, movies) {
-                        if (err) throw err;
-                        else
-                            res.json(movies);
-                    })
-
-                }
-
-            else{
-                res.status(200).json({success: true, msg :'movie found', movieDetails : movie})       // else return the movie}
-                }
-
-        })
+    //PUT = is supposed to FAIL and not return anything because we don't have parameter
+    .put(authJwtController.isAuthenticated, function(req, res) {
+            res.json({ msg: 'Must specify which movie you want to update.'});
     })
 
 
 
-
-    //Delete movies
+    //DELETE = is supposed to FAIL and not return anything because we don't have parameter
     .delete(authJwtController.isAuthenticated, function(req, res) {
-        if (!req.body.title) {
-            res.json({success: false, msg: 'Please pass a Movie Title to delete.'});
-        }
-        else {
-            Movie.findOneAndRemove({title: req.body.title}, function (err) {
-                if (err) throw err;
-                res.json({success: true, msg: 'Movie successfully deleted.'});
-            })
-            //}
-            //})
-        }
+            res.json({msg: 'Must specify which movie you want to delete.'});
     });
 
 
 
+//------------------------------------------------------------------------------------------
 
 
+// get a single movie by ID
+router.get('/movies/:id', (req,res) => {
+    const movie = new Movie();
 
-
-
-
-router.route('/reviews')
-    .post(authJwtController.isAuthenticated, function (req, res) {
-        console.log(req.body);
-        if(!req.body.quote || !req.body.rating || !req.body.movieid){
-            console.log("Reviewer name, Quote, Rating, or Movie not found!");
-            res.json({success: false, message: "Reviewer name, Quote, Rating, or Movie not found!"});
+    Movie.findById(req.params._id, movie, function (err) {
+        if (err) {
+            res.send(err);
+            console.log(err);
         }
 
-        else{
-
-            const userToken = req.headers.authorization;
-            const token = userToken.split(' ');
-            const decoded = jwt.verify(token[1], process.env.SECRET_KEY);
-            console.log(decoded);
-
-            const id = req.body.movieid;
-
-            Movie.findById(id, function(err, okay) {
-                if (err) {
-                    res.json({success: false, message: "Error. Movie doesn't exist"});
-                }
-                else if (okay) {
-
-                    var review = new Review();
-                    review.movieid = req.body.movieid;
-                    review.reviewer = decoded.username;
-                    review.quote = req.body.quote;
-                    review.rating = req.body.rating;
-
-
-                    review.save(function (err){
-
-                        if(err){
-                            console.log(err);
-                            res.json({success: false, message: "Error. You cannot make multiple reviews for same movie!"})
-                        }
-
-                        else{
-                            res.json({success: true, message: "Review saved"});
-                        }
-                    });
-                }
-
-            });
-        }
-
+        res.json({success: true, movie: movie})
     })
+})
 
-    .get(authJwtController.isAuthenticated, function (req, res){
-        console.log(req.body);
+router.put('/movies/:id', (req, res) => {
 
-        Review.find(function(err, review){
-            if (err){
-                res.json({success: false, message: "Could not get reviews."});
-            }
+    const movie = new Movie();
 
-            else{
-                res.json(review)
-            }
+    movie.Title = req.body.Title;
+    movie.YearReleased = req.body.YearReleased;
+    movie.Genre = req.body.Genre;
+    movie.Actors = req.body.Actors;
 
+    Movie.findByIdAndUpdate(req.params._id, movie, function (err) {
+        if (err) {
+            res.send(err);
+            console.log(err);
+        }
 
-        });
-
+        res.json({success:true, movieupdated: movie});
     });
+
+});
+
+router.delete('/movies/:id', (req, res) => {
+
+    Movie.findByIdAndDelete(req.params._id, function (err) {
+        if (err) {
+            res.send(err);
+            console.log(err);
+        }
+
+        res.json({success: true, message: "movie deleted"});
+    });
+
+});
+
+
+
+
+
+
+
 
 
 
