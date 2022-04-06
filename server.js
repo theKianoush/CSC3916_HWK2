@@ -180,7 +180,7 @@ router.route('/movies')
             }
             else{
                 if (movie === null){
-                    Movie.find({function(err, movies)}  {
+                    Movie.find(function(err, movies))  {
                         if (err) {
                             console.log(err);
                             res.send(err);
