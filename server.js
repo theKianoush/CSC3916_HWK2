@@ -106,6 +106,7 @@ router.post('/signin', function (req, res) {
 
 
 //------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
 
 
 router.route('/movies')
@@ -165,7 +166,8 @@ router.route('/movies')
 
 
 
-//------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------
 
 
 
@@ -190,12 +192,12 @@ router.route('/movies/:id')
 
         const movie = new Movie();
 
-        movie.Title = req.body.Title;
-        movie.YearReleased = req.body.YearReleased;
-        movie.Genre = req.body.Genre;
-        movie.Actors = req.body.Actors;
+        movie.title = req.body.title;
+        movie.year = req.body.year;
+        movie.genre = req.body.genre;
+        movie.actors = req.body.actors;
 
-        Movie.findByIdAndUpdate(req.params.id, movie, function (err) {
+        Movie.findByIdAndUpdate(req.params.id, function (err, movie) {
             if (err) {
                 res.send(err);
                 console.log(err);
@@ -245,22 +247,8 @@ router.route('/movies/:id')
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//-----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------
 
 
 
