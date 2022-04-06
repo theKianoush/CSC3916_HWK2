@@ -111,16 +111,6 @@ router.post('/signin', function (req, res) {
 router.route('/movies')
 
 
-    // GET = supposed to return all movies when no parameters are entered
-    .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
-        Movie.find({}, function (err, movies) {
-            if (err) throw err;
-            else
-                res.json(movies);
-        })
-
-    })
-
 
 
     // POST = supposed to save a single movie to database
@@ -159,7 +149,19 @@ router.route('/movies')
     //DELETE = is supposed to FAIL and not return anything because we don't have parameter
     .delete(authJwtController.isAuthenticated, function(req, res) {
             res.json({msg: 'Must specify which movie you want to delete.'});
-    });
+    })
+
+
+
+    // GET = supposed to return all movies when no parameters are entered
+    .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
+    Movie.find({}, function (err, movies) {
+        if (err) throw err;
+        else
+            res.json(movies);
+    })
+
+});
 
 
 
@@ -175,50 +177,15 @@ router.route('/movies/:id')
 
 
 
-    // get a single movie by ID
-    .get(authJwtController.isAuthenticated, function (req,res) {
-        const movie = new Movie();
 
-        Movie.findById(req.params._id, movie, function (err) {
-            if (err) {
-                res.send(err);
-                console.log(err);
-            }
-
-            res.json({success: true, movie: movie})
-        })
+    //POST = is supposed to FAIL and not return anything
+    .post(authJwtController.isAuthenticated, function(req, res) {
+        res.json({msg: 'Movie is already saved'});
     })
 
 
 
-
-
-
-
-
-    .delete(authJwtController.isAuthenticated, function(req, res) {
-
-         //   console.log(req.params.id);
-        //res.json(req.params.id);
-
-
-
-        Movie.findByIdAndDelete(req.params.id, function (err) {
-            if (err) {
-                res.send(err);
-                console.log(err);
-            }
-
-            res.json({success: true, message: "movie deleted"});
-        });
-
-
-
-
-    })
-
-
-
+    //PUT = is supposed to update movie with parameter
     .put(authJwtController.isAuthenticated, function(req, res) {
 
         const movie = new Movie();
@@ -228,7 +195,7 @@ router.route('/movies/:id')
         movie.Genre = req.body.Genre;
         movie.Actors = req.body.Actors;
 
-        Movie.findByIdAndUpdate(req.params._id, movie, function (err) {
+        Movie.findByIdAndUpdate(req.params.id, movie, function (err) {
             if (err) {
                 res.send(err);
                 console.log(err);
@@ -237,7 +204,50 @@ router.route('/movies/:id')
             res.json({success:true, movieupdated: movie});
         });
 
+    })
+
+
+
+    // DELETE === is supposed to delete movie with parameter
+    .delete(authJwtController.isAuthenticated, function(req, res) {
+
+        //   console.log(req.params.id);
+        //res.json(req.params.id);
+
+//if it exists delete it, if not print please enter a movie to delete Must specify the name of the movie for deletion
+
+        Movie.findByIdAndDelete(req.params.id, function (err) {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            }
+
+            res.json({success: true, message: "movie deleted"});
+        });
+    })
+
+
+
+
+    //GET = is supposed to get movie with parameter
+    .get(authJwtController.isAuthenticated, function (req,res) {
+        const movie = new Movie();
+
+        Movie.findById(req.params.id, movie, function (err) {
+            if (err) {
+                res.send(err);
+                console.log(err);
+            }
+
+            res.json({success: true, movie: movie})
+        })
     });
+
+
+
+
+
+
 
 
 
