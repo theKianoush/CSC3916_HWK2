@@ -279,7 +279,7 @@ router.route('/reviews')
                         return res.json(err);
                     }else{
 
-                        return res.json({message: 'Successfully created new review.'});
+                        return res.json({message: 'Successfully created new review.', review: review});
                     }
                 })
 
