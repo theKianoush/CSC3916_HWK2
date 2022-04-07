@@ -307,7 +307,7 @@ router.route('/reviews')
                         return res.json(err.message);
                 }
 
-                res.json({success: true, message: 'Successfully created new review.'});
+               // res.json({success: true, message: 'Successfully created new review.'});
 
                 Review.aggregate([{
                     $match: {"title": review.title}
@@ -323,7 +323,8 @@ router.route('/reviews')
                     if(err){
                         return res.json(err);
                     }else{
-                        return res.json({review});
+                        //return res.json({review});
+                        res.json({success: true, message: 'we init fam'});
                     }
                 })
 
