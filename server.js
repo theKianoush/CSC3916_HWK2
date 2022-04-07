@@ -281,12 +281,12 @@ router.route('/reviews')
 
     .get(authJwtController.isAuthenticated, function(req, res) {
 
-        Review.findOne(req.body.title, function (err, movie) {
+        Review.find({title: req.body.title}, function (err, review) {
             if (err) {
                 res.send(err);
                 console.log(err);
             } else {
-                res.json({success: true, movie: movie});
+                res.json({success: true, movie: review});
             }
         })
 
