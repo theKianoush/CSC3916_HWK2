@@ -246,13 +246,15 @@ router.route('/reviews')
         if(!req.body.title || !req.body.user || !req.body.comment || !req.body.rating) {
             return res.json({success: false, message: "title, username, comment, rating required"});
         }else{
-            var review = new Review();
+
             Movie.findOne({title: req.body.title}, function (err, movie) {
                 if (err) {
                     return res.status(400).json({success: false, message: "Unable to post review"});
                 } else if (!movie) {
                     return res.status(400).json({success: false, message: "Movie doesnt exist"});
                 } else {
+                    var review = new Review();
+
                     review.title = req.body.title;
                     review.username = req.body.username;
                     review.comment = req.body.comment;
@@ -262,7 +264,7 @@ router.route('/reviews')
                         if (err) {
                             return res.json(err);
                         } else {
-                            return res.json({success: true, message: "review saved"});
+                            return res.json({success: true, message: "review saved", review : review});
                         }
                     })
                 }
@@ -271,7 +273,7 @@ router.route('/reviews')
     })
 
 
-    .get(function (req, res){
+    .get(authJwtController.isAuthenticated, function (req, res){
         if(!req.body.title){
             res.json({success: false, message: "cant find a review for the movie"});
         }else if(req.query.review == "true"){
