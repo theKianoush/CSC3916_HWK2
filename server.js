@@ -233,7 +233,7 @@ router.route('/movies/:id')
                     return  res.status(400).json({success: false, message: "movie not in database"});
                 }else{
 
-            res.json({MovieID: req.params.id, movietitle: req.movie.title})
+            res.json({MovieID: req.params.id, movie: movie.title})
 
                 }
             })
