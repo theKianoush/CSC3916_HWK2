@@ -320,7 +320,7 @@ router.route('/reviews')
                     //res.json({success: true, movie: review});
 
                     Review.aggregate([{
-                        $match: {"title": review.title}
+                        $match: {"title": req.body.title}
                     },{
                         $lookup: {
                             from: "movies",
