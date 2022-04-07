@@ -233,7 +233,25 @@ router.route('/movies/:id')
                     return  res.status(400).json({success: false, message: "movie not in database"});
                 }else{
 
-            res.json({MovieID: req.params.id, movie: movie.title})
+            //res.json({MovieID: req.params.id, movie: movie.title})
+                    Movie.aggregate([{
+                        $match: {"title": movie.title}
+                    },{
+                        $lookup: {
+                            from: "reviews",
+                            localField: "title",
+                            foreignField: "title",
+                            as: "reviews"
+                        }
+                    }
+                    ]).exec(function(err,movie){
+                            if(err){
+                                return res.json(err);
+                            }else{
+                                return res.json({movie: movie});
+                            }
+                        })
+
 
                 }
             })
