@@ -142,14 +142,14 @@ router.route('/movies')
 
     //PUT = is supposed to FAIL and not return anything because we don't have parameter
     .put(authJwtController.isAuthenticated, function(req, res) {
-            res.json({ msg: 'Must specify which movie you want to update.'});
+            res.json({ msg: 'FAIL: need parameter to update movie'});
     })
 
 
 
     //DELETE = is supposed to FAIL and not return anything because we don't have parameter
     .delete(authJwtController.isAuthenticated, function(req, res) {
-            res.json({msg: 'Must specify which movie you want to delete.'});
+            res.json({msg: 'FAIL: need parameter to delete movie '});
     })
 
 
@@ -182,7 +182,7 @@ router.route('/movies/:id')
 
     //POST = is supposed to FAIL and not return anything
     .post(authJwtController.isAuthenticated, function(req, res) {
-        res.json({msg: 'Movie is already saved'});
+        res.json({msg: 'FAIL: movie is already saved'});
     })
 
 
@@ -190,14 +190,8 @@ router.route('/movies/:id')
     //PUT = is supposed to update movie with parameter
     .put(authJwtController.isAuthenticated, function(req, res) {
 
-        const movie = new Movie();
 
-        movie.title = req.body.title;
-        movie.year = req.body.year;
-        movie.genre = req.body.genre;
-        movie.actors = req.body.actors;
-
-        Movie.findByIdAndUpdate(req.params.id, function (err, movie) {
+        Movie.findByIdAndUpdate(req.params.id, {$set:req.body}, function (err, movie) {
             if (err) {
                 res.send(err);
                 console.log(err);
