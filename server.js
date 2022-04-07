@@ -218,39 +218,17 @@ router.route('/movies/:id')
 
 
     //GET = is supposed to get movie with parameter
-   // .get(authJwtController.isAuthenticated, function (req,res) {
-     //   Movie.findById(req.params.id, function (err, movie)  {
-       //     if (err) {
-         //       res.send(err);
-           //     console.log(err);
-           // }
+    .get(authJwtController.isAuthenticated, function (req,res) {
+        Movie.findById(req.params.id, function (err, movie)  {
+            if (err) {
+                res.send(err);
+                console.log(err);
+           }
 
-           // res.json({success: true, movie: movie})
-       // })
-    //});
-
-
-
-
-
-    .get(authJwtController.isAuthenticated, function (req, res){
-        if(req.query && req.query.reviews && req.query.reviews === "true"){
-            Movie.findById(req.params.id, function (err, movie){
-                if(err){
-                    return res.status(404).json({success:false, message: "Unable to find movie"});
-                }else if(!movie){
-                    return res.status(403).json({success: false, message: "Movie doesn't exist"});
-                }else{
-                    return res.status(403).json({success: false, message: "kinda working"});
-
-                }
-            })
-        }
-        else{
-            return res.status(403).json({success: false, message: "enter query parameters"});
-            }
-
+            res.json({success: true, movie: movie})
+        })
     });
+
 
 
 
@@ -267,7 +245,7 @@ router.route('/reviews')
 
 
     //GET = is supposed to FAIL and not return anything because we don't have parameter
-    .Get(authJwtController.isAuthenticated, function(req, res) {
+    .get(authJwtController.isAuthenticated, function(req, res) {
         res.json({msg: 'FAIL: need parameter to get review '});
     })
 
