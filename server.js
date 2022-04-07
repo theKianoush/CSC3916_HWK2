@@ -217,10 +217,13 @@ router.route('/movies/:id')
 
 
 
+
+
+
+
     //GET = is supposed to get movie with parameter
     .get(authJwtController.isAuthenticated, function (req,res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
-
 
 
             Movie.findById(req.params.id, function (err, movie){
@@ -230,9 +233,8 @@ router.route('/movies/:id')
                     return  res.status(400).json({success: false, message: "movie not in database"});
                 }else{
 
-                    res.json({success: true, message: "we in"});
-                }
-            })
+
+    res.json({success: true, message:" made it here", req.params.id})
 
 
 
