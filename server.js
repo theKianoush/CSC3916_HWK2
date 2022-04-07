@@ -217,55 +217,19 @@ router.route('/movies/:id')
 
 
 
+    //GET = is supposed to get movie with parameter
+     .get(authJwtController.isAuthenticated, function (req,res) {
+       Movie.findById(req.params.id, function (err, movie)  {
+         if (err) {
+           res.send(err);
+         console.log(err);
+     }
 
-
-
-    // If (query_parameter_reviews=true && movieID_is_set), then this will return the specific movie and its reviews appended to the end
-    // If (no_query_parameter), then this will just return the movie through the movie id parameter
-    .get(authJwtController.isAuthenticated, function (req,res) {
-        if (req.query && req.query.reviews && req.query.reviews === "true") {
-
-            Movie.findById(req.params.id, function (err, movie){
-                if(err){
-                    return res.status(400).json({success: false, message: "cant find movie"});
-                }else if(!movie){
-                    return  res.status(400).json({success: false, message: "movie not in database"});
-                }else{
-
-            //res.json({MovieID: req.params.id, movie: movie.title})
-                    Movie.aggregate([{
-                        $match: {"title": movie.title}
-                    },{
-                        $lookup: {
-                            from: "reviews",
-                            localField: "title",
-                            foreignField: "title",
-                            as: "reviews"
-                        }
-                    }
-                    ]).exec(function(err,movie){
-                            if(err){
-                                return res.json(err);
-                            }else{
-                                return res.json({movie});
-                            }
-                        })
-                }
-            })
-        }
-        else {            // if query params dont work, find movie how you normally would
-
-            Movie.findById(req.params.id, function (err, movie) {
-            if (err) {
-                res.send(err);
-                console.log(err);
-            }
-
-            res.json({success: true, movie: movie})
-        })
-
-        }
+     res.json({success: true, movie: movie})
+     })
     });
+
+
 
 
 //-------------------------------------------------------------------------------------------------------
@@ -278,15 +242,74 @@ router.route('/movies/:id')
 router.route('/reviews')
 
 
+// POST = saves a review and then appends movie to the end of that review
+    .post(authJwtController.isAuthenticated, function(req,res)  {
+        if(!req.body.title || !req.body.reviewersname || !req.body.rating || !req.body.comment)
+        {
+            res.status(403).json({success: false, message: "title, comment, rating, and reviewersname is required"   });
+        }
+        else {
+            var review = new Review();
+            review.title = req.body.title;
+            review.reviewersname = req.body.reviewersname;
+            review.rating = req.body.rating;
+            review.comment = req.body.comment;
+
+            review.save(function(err){
+                if (err) {
+                    if (err.code == 11000)
+                        return res.json({ success: false, message: 'already exists.'});
+                    else
+                        return res.json(err.message);
+                }
 
 
-    //GET = is supposed to FAIL and not return anything because we don't have parameter
+                Review.aggregate([{
+                    $match: {"title": review.title}
+                },{
+                    $lookup: {
+                        from: "movies",
+                        localField: "title",
+                        foreignField: "title",
+                        as: "movies"
+                    }
+                }
+                ]).exec(function(err,review){
+                    if(err){
+                        return res.json(err);
+                    }else{
+
+                        return res.json({message: 'Successfully created new review.'});
+                    }
+                })
+
+
+
+            });
+        }
+
+    })
+
+
+
+
+
+
+
+
+//GET = gets the review with movie appended to the end if you have query parameter and title of movie
+//
+//      gets the movie if you have no query parameter but titles of movie
     .get(authJwtController.isAuthenticated, function(req, res) {
 
+
+        // if no movie title and no query param
         if (!req.body.title){
             res.json({success: false, message: "movie not in database"});
         }
 
+
+        // if query param is there and title of movie/review, it will find the review and append the movie to the end of it
         else if (req.query && req.query.reviews && req.query.reviews === "true") {
 
             Review.find({title: req.body.title}, function (err, review) {
@@ -310,8 +333,7 @@ router.route('/reviews')
                         if(err){
                             return res.json(err);
                         }else{
-                            //return res.json({review});
-                            //res.json({success: true, message: 'we init fam'});
+
                             return res.json({review});
                         }
                     })
@@ -321,6 +343,8 @@ router.route('/reviews')
 
         }
 
+
+        // if no query param, but title is given, it will just find the movie with no review
         else {
             Movie.find({title: req.body.title}, function (err, movie) {
                 if (err) {
@@ -335,62 +359,13 @@ router.route('/reviews')
                 }
             })
         }
-    })
-
-
-
-
-
-
-
-    .post(authJwtController.isAuthenticated, function(req,res)  {
-        if(!req.body.title || !req.body.reviewersname || !req.body.rating || !req.body.comment)
-        {
-            res.status(403).json({success: false, message: "title, comment, rating, and reviewersname is required"   });
-        }
-        else {
-            var review = new Review();
-            review.title = req.body.title;
-            review.reviewersname = req.body.reviewersname;
-            review.rating = req.body.rating;
-            review.comment = req.body.comment;
-
-            review.save(function(err){
-                if (err) {
-                    if (err.code == 11000)
-                        return res.json({ success: false, message: 'already exists.'});
-                    else
-                        return res.json(err.message);
-                }
-
-               // res.json({success: true, message: 'Successfully created new review.'});
-
-                Review.aggregate([{
-                    $match: {"title": review.title}
-                },{
-                    $lookup: {
-                        from: "movies",
-                        localField: "title",
-                        foreignField: "title",
-                        as: "movies"
-                    }
-                }
-                ]).exec(function(err,review){
-                    if(err){
-                        return res.json(err);
-                    }else{
-                        //return res.json({review});
-                        //res.json({success: true, message: 'we init fam'});
-                        return res.json({review});
-                    }
-                })
-
-
-
-            });
-        }
-
     });
+
+
+
+
+
+
 
 
 
