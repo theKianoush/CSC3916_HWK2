@@ -223,6 +223,34 @@ router.route('/movies/:id')
 
             res.json({success: true, message: "we in"});
 
+            Movie.findById(req.params.id, function (err, movie){
+                if(err){
+                    return res.status(400).json({success: false, message: "cant find movie"});
+                }else if(!movie){
+                    return  res.status(400).json({success: false, message: "movie not in database"});
+                }else{
+                    Movie.aggregate([
+                        {$match :
+                                {_id: req.params.id}},
+                        {$lookup:
+                                {from: "reviews", localField: "title", foreignField: "title", as:"review"}},
+                        {$addFields:
+                                {averageRate: {$avg: "$review.rating"}}}
+                    ]).exec(function(err, movie){
+                        if(err){
+                            return res.json(err);
+                        }else{
+                            return res.json(movie);
+                        }
+                    })
+                }
+            })
+
+
+
+
+
+
         }
         else {            // if query params dont work, find movie how you normally would
 
@@ -237,7 +265,6 @@ router.route('/movies/:id')
 
         }
     });
-
 
 
 
