@@ -242,7 +242,7 @@ router.route('/movies/:id')
                     return res.status(403).json({success: false, message: "Movie doesn't exist"});
                 }else{
                     Movie.aggregate()
-                        .match({_id: mongoose.Types.ObjectId(movie._id)})
+                        .match(req.params.id)
                         .lookup({from: 'reviews', localField: 'title', foreignField: 'title', as: 'reviews'})
                         .exec(function (err, movie) {
                             if (err) {
