@@ -241,14 +241,14 @@ router.route('/reviews')
 
 
     .post(authJwtController.isAuthenticated, function(req,res)  {
-        if(!req.body.title || !req.body.username || !req.body.rating || !req.body.comment)
+        if(!req.body.title || !req.body.name || !req.body.rating || !req.body.comment)
         {
             res.status(403).json({success: false, message: "title, username, comment, rating required"   });
         }
         else {
             var review = new Review();
-            review.userame = req.body.username;
             review.title = req.body.title;
+            review.name = req.body.name
             review.rating = req.body.rating;
             review.comment = req.body.comment;
 
