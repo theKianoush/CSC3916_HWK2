@@ -218,10 +218,6 @@ router.route('/movies/:id')
 
 
 
-//-------------------------------------------------------------------------------------------------------
-//                  assignment four - reviews section
-//-------------------------------------------------------------------------------------------------------
-
 
 
     // If (query_parameter_reviews=true && movieID_is_set), then this will return the specific movie and its reviews appended to the end
@@ -272,6 +268,10 @@ router.route('/movies/:id')
     });
 
 
+//-------------------------------------------------------------------------------------------------------
+//                  assignment four - reviews section
+//-------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -279,18 +279,65 @@ router.route('/reviews')
 
 
 
+
+    //GET = is supposed to FAIL and not return anything because we don't have parameter
     .get(authJwtController.isAuthenticated, function(req, res) {
 
-        Review.find({title: req.body.title}, function (err, review) {
-            if (err) {
-                res.send(err);
-                console.log(err);
-            } else {
-                res.json({success: true, movie: review});
-            }
-        })
+        if (!req.body.title){
+            res.json({success: false, message: "movie not in database"});
+        }
 
+        else if (req.query && req.query.reviews && req.query.reviews === "true") {
+
+            Review.find({title: req.body.title}, function (err, review) {
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                } else {
+                    //res.json({success: true, movie: review});
+
+                    Review.aggregate([{
+                        $match: {"title": review.title}
+                    },{
+                        $lookup: {
+                            from: "movies",
+                            localField: "title",
+                            foreignField: "title",
+                            as: "movies"
+                        }
+                    }
+                    ]).exec(function(err,review){
+                        if(err){
+                            return res.json(err);
+                        }else{
+                            //return res.json({review});
+                            //res.json({success: true, message: 'we init fam'});
+                            return res.json({review});
+                        }
+                    })
+
+                }
+            })
+
+        }
+
+        else {
+            Movie.find({title: req.body.title}, function (err, movie) {
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                } else {
+                    res.json({success: true, movie: movie});
+
+
+
+
+                }
+            })
+        }
     })
+
+
 
 
 
