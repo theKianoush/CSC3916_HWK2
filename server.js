@@ -324,7 +324,8 @@ router.route('/reviews')
                         return res.json(err);
                     }else{
                         //return res.json({review});
-                        res.json({success: true, message: 'we init fam'});
+                        //res.json({success: true, message: 'we init fam'});
+                        return res.json({review});
                     }
                 })
 
