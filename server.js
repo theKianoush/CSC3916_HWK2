@@ -278,11 +278,40 @@ router.route('/movies/:id')
 router.route('/reviews')
 
 
-
     //GET = is supposed to FAIL and not return anything because we don't have parameter
     .get(authJwtController.isAuthenticated, function(req, res) {
-        res.json({msg: 'FAIL: must get movie through "./movies/:id?reviews=true" path '});
+
+        if (!req.body.title){
+            res.json({success: false, message: "movie not in database"});
+        }
+
+        else if (req.query && req.query.reviews && req.query.reviews === "true") {
+            Review.findOne(req.body.title, function (err, movie) {
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                } else {
+                    res.json({success: true, movie: movie});
+                }
+            })
+        }
+
+        else {
+               Movie.findOne(req.body.title, function (err, movie) {
+                   if (err) {
+                       res.send(err);
+                       console.log(err);
+                   } else {
+                       res.json({success: true, movie: movie});
+                   }
+               })
+            }
     })
+
+
+    // need to get review that have movie on it if passes query and you type that movie in the body
+    // if you just type movie in the body then return that movie
+
 
 
 
