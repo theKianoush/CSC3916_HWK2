@@ -218,16 +218,52 @@ router.route('/movies/:id')
 
 
     //GET = is supposed to get movie with parameter
-    .get(authJwtController.isAuthenticated, function (req,res) {
-        Movie.findById(req.params.id, function (err, movie)  {
-            if (err) {
-                res.send(err);
-                console.log(err);
+   // .get(authJwtController.isAuthenticated, function (req,res) {
+     //   Movie.findById(req.params.id, function (err, movie)  {
+       //     if (err) {
+         //       res.send(err);
+           //     console.log(err);
+           // }
+
+           // res.json({success: true, movie: movie})
+       // })
+    //});
+
+
+
+
+
+    .get(authJwtController.isAuthenticated, function (req, res){
+        if(req.query && req.query.reviews && req.query.reviews === "true"){
+            Movie.findById(req.params.id, function (err, movie){
+                if(err){
+                    return res.status(404).json({success:false, message: "Unable to find movie"});
+                }else if(!movie){
+                    return res.status(403).json({success: false, message: "Movie doesn't exist"});
+                }else{
+                    Movie.aggregate()
+                        .match({_id: mongoose.Types.ObjectId(movie._id)})
+                        .lookup({from: 'reviews', localField: 'title', foreignField: 'title', as: 'reviews'})
+                        .addFields({averaged_rating: {$avg: "$reviews.rating"}})
+                        .exec(function (err, movie) {
+                            if (err) {
+                                res.status(500).send(err);
+                            }
+                            else {
+                                res.json(movie);
+                            }
+                        })
+
+                }
+            })
+        }
+        else{
+            return res.status(403).json({success: false, message: "enter query parameters"});
             }
 
-            res.json({success: true, movie: movie})
-        })
     });
+
+
 
 
 
@@ -240,10 +276,19 @@ router.route('/movies/:id')
 router.route('/reviews')
 
 
+
+    //GET = is supposed to FAIL and not return anything because we don't have parameter
+    .Get(authJwtController.isAuthenticated, function(req, res) {
+        res.json({msg: 'FAIL: need parameter to get review '});
+    })
+
+
+
+
     .post(authJwtController.isAuthenticated, function(req,res)  {
         if(!req.body.title || !req.body.name || !req.body.rating || !req.body.comment)
         {
-            res.status(403).json({success: false, message: "title, username, comment, rating required"   });
+            res.status(403).json({success: false, message: "title, comment, rating, and username(as {'name': 'username'}) is required"   });
         }
         else {
             var review = new Review();
@@ -265,7 +310,6 @@ router.route('/reviews')
         }
 
     });
-
 
 
 
