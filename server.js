@@ -218,13 +218,16 @@ router.route('/movies/:id')
 
 
 
+//-------------------------------------------------------------------------------------------------------
+//                  assignment four - reviews section
+//-------------------------------------------------------------------------------------------------------
 
 
 
-    //GET = is supposed to get movie with parameter
+    // If (query_parameter_reviews=true && movieID_is_set), then this will return the specific movie and its reviews appended to the end
+    // If (no_query_parameter), then this will just return the movie through the movie id parameter
     .get(authJwtController.isAuthenticated, function (req,res) {
         if (req.query && req.query.reviews && req.query.reviews === "true") {
-
 
             Movie.findById(req.params.id, function (err, movie){
                 if(err){
@@ -248,19 +251,11 @@ router.route('/movies/:id')
                             if(err){
                                 return res.json(err);
                             }else{
-                                return res.json({movie: movie});
+                                return res.json({movie});
                             }
                         })
-
-
                 }
             })
-
-
-
-
-
-
         }
         else {            // if query params dont work, find movie how you normally would
 
@@ -280,33 +275,27 @@ router.route('/movies/:id')
 
 
 
-//-----------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------
-
-
-
-
 router.route('/reviews')
 
 
 
     //GET = is supposed to FAIL and not return anything because we don't have parameter
     .get(authJwtController.isAuthenticated, function(req, res) {
-        res.json({msg: 'FAIL: need parameter to get review '});
+        res.json({msg: 'FAIL: must get movie through "./movies/:id?reviews=true" path '});
     })
 
 
 
 
     .post(authJwtController.isAuthenticated, function(req,res)  {
-        if(!req.body.title || !req.body.name || !req.body.rating || !req.body.comment)
+        if(!req.body.title || !req.body.reviewersname || !req.body.rating || !req.body.comment)
         {
-            res.status(403).json({success: false, message: "title, comment, rating, and username(as {'name': 'username'}) is required"   });
+            res.status(403).json({success: false, message: "title, comment, rating, and reviewersname is required"   });
         }
         else {
             var review = new Review();
             review.title = req.body.title;
-            review.name = req.body.name
+            review.reviewersname = req.body.reviewersname;
             review.rating = req.body.rating;
             review.comment = req.body.comment;
 
@@ -318,7 +307,28 @@ router.route('/reviews')
                         return res.json(err.message);
                 }
 
-                res.json({success: true, message: 'Successfully created new review.'})
+                res.json({success: true, message: 'Successfully created new review.'});
+
+                Review.aggregate([{
+                    $match: {"title": review.title}
+                },{
+                    $lookup: {
+                        from: "movies",
+                        localField: "title",
+                        foreignField: "title",
+                        as: "movies"
+                    }
+                }
+                ]).exec(function(err,review){
+                    if(err){
+                        return res.json(err);
+                    }else{
+                        return res.json({review});
+                    }
+                })
+
+
+
             });
         }
 
