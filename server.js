@@ -174,7 +174,7 @@ router.route('/movies')
 
 
 
-router.route('/movies/:id')
+router.route('/movies/:movieId')
 
 
 
