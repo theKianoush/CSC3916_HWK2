@@ -174,64 +174,6 @@ router.route('/movies')
 
 
 
-router.route('/movies/:movieId')
-
-
-
-
-
-    //POST = is supposed to FAIL and not return anything
-    .post(authJwtController.isAuthenticated, function(req, res) {
-        res.json({msg: 'FAIL: movie is already saved'});
-    })
-
-
-
-    //PUT = is supposed to update movie with parameter
-    .put(authJwtController.isAuthenticated, function(req, res) {
-        Movie.findByIdAndUpdate(req.params.movieId, {$set:req.body}, function (err, movie) {
-            if (err) {
-                res.send(err);
-                console.log(err);
-            }
-
-            res.json({success:true, movieupdated: movie});
-        });
-
-    })
-
-
-
-    // DELETE === is supposed to delete movie with parameter
-    .delete(authJwtController.isAuthenticated, function(req, res) {
-        Movie.findByIdAndDelete(req.params.movieId, function (err) {
-            if (err) {
-                res.send(err);
-                console.log(err);
-            }
-
-            res.json({success: true, message: "movie deleted"});
-        });
-    })
-
-
-
-
-    //GET = is supposed to get movie with parameter
-     .get(authJwtController.isAuthenticated, function (req,res) {
-       Movie.findById(req.params.movieId, function (err, movie)  {
-         if (err) {
-           res.send(err);
-         console.log(err);
-     }
-
-     res.json(movie)
-     })
-    });
-
-
-
-
 //-------------------------------------------------------------------------------------------------------
 //                  assignment four - reviews section
 //-------------------------------------------------------------------------------------------------------
