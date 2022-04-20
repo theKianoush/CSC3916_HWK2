@@ -225,7 +225,7 @@ router.route('/movies/:movieId')
          console.log(err);
      }
 
-     res.json({success: true, movie: movie})
+     res.json(movie)
      })
     });
 
