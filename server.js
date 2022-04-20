@@ -189,7 +189,7 @@ router.route('/movies/:movieId')
 
     //PUT = is supposed to update movie with parameter
     .put(authJwtController.isAuthenticated, function(req, res) {
-        Movie.findByIdAndUpdate(req.params.id, {$set:req.body}, function (err, movie) {
+        Movie.findByIdAndUpdate(req.params.movieId, {$set:req.body}, function (err, movie) {
             if (err) {
                 res.send(err);
                 console.log(err);
@@ -204,7 +204,7 @@ router.route('/movies/:movieId')
 
     // DELETE === is supposed to delete movie with parameter
     .delete(authJwtController.isAuthenticated, function(req, res) {
-        Movie.findByIdAndDelete(req.params.id, function (err) {
+        Movie.findByIdAndDelete(req.params.movieId, function (err) {
             if (err) {
                 res.send(err);
                 console.log(err);
@@ -219,7 +219,7 @@ router.route('/movies/:movieId')
 
     //GET = is supposed to get movie with parameter
      .get(authJwtController.isAuthenticated, function (req,res) {
-       Movie.findById(req.params.id, function (err, movie)  {
+       Movie.findById(req.params.movieId, function (err, movie)  {
          if (err) {
            res.send(err);
          console.log(err);
