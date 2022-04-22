@@ -224,7 +224,7 @@ router.route('/movies/:movieId')
                 console.log(err);
             }
 
-            res.json(movie)
+            res.json(movie.title)
         })
     });
 
