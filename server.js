@@ -229,21 +229,12 @@ router.route('/movies/:movieId')
             })
         }
         else {
-            console.log("helloworld");
+            res.json(reviews);
         }
     });
 
 
 
-
-Movie.findById(req.params.movieId, function (err, movie)  {
-    if (err) {
-        res.send(err);
-        console.log(err);
-    }
-
-    res.json(movie)
-})
 
 
 //-------------------------------------------------------------------------------------------------------
