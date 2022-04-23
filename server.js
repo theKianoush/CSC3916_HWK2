@@ -241,7 +241,7 @@ router.route('/movies/:movieId')
                 Movie.findById(req.params.movieId, function (err, movie) {
                     if (err) throw err;
                     else {
-                        res.json(movie.year);
+                        res.json(movie);
                     }
                 })
             }
