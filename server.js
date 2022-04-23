@@ -247,12 +247,12 @@ router.route('/movies/:movieId')
                          as: "reviews"
                      }
                  }
-                 ]).exec(function(err,review){
+                 ]).exec(function(err,movie){
                      if(err){
                          return res.json(err);
                      }else{
 
-                         return res.json({movie});
+                         return res.json(movie);
                      }
                  })
              }
@@ -272,7 +272,7 @@ router.route('/movies/:movieId')
                 res.send(err);
                 console.log(err);
             } else {
-                res.json(movie);
+                res.json(movie.title);
 
             }
         })
