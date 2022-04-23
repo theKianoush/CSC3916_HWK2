@@ -224,17 +224,12 @@ router.route('/movies/:movieId')
             Movie.findById(req.params.movieId, function (err, movies) {
                 if (err)  throw err;
                 else {
-                    Movie.aggregate()
-                        .lookup({from: 'reviews', localField: 'title', foreignField: 'title', as: 'reviews'})
-                        .exec(function (err, movies) {
-                            if (err) {
-                                res.status(500).send(err);
-                            } else {
-                                res.json(movies);
-                            }
-                        })
+                    res.json(movies);
                 }
             })
+        }
+        else {
+            console.log("helloworld");
         }
     });
 
