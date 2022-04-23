@@ -225,16 +225,27 @@ router.route('/movies/:movieId')
         Movie.findById(req.params.movieId, function (err, movie) {
             if (err)  throw err;
             else {
-                Movie.aggregate()
-                    .match(movie.title)
-                    .lookup({from: 'reviews', localField: 'title', foreignField: 'title', as: 'reviews'})
-                    .exec(function (err, movie) {
-                        if (err) {
-                            res.status(500).send(err);
-                        } else {
-                            res.json(movie);
+                Movie.aggregate([
+
+                    { $match: {
+                            title: movie.title
                         }
-                    })
+
+                        },
+
+                    { lookup: {
+                            from: 'reviews',
+                            localField: 'title',
+                            foreignField: 'title',
+                            as: 'reviews'
+                        }}
+
+
+                ], function(err, movie) {
+                    if (err) throw err;
+                    else {res.json(movie)};
+                    // do something with err and result
+                });
             }
         })
     } else {
