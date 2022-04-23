@@ -218,62 +218,17 @@ router.route('/movies/:movieId')
 
 
     //GET = is supposed to get movie with parameter
-    // GET = gets a movie with the movieId parameter
-    // if we have the query param = true, then we will append the review for that movie to the end of the movie
-    // if not we will just get the movie with movieId
-.get(authJwtController.isAuthenticated, function (req,res) {
-
-
-
-    // if query param is there and title of movie/review, it will find the review and append the movie to the end of it
-     if (req.query && req.query.reviews && req.query.reviews === "true") {
-
-         Movie.findById(req.params.movieId, function (err, movie) {
-             if (err) {
-                 res.send(err);
-                 console.log(err);
-             } else {
-                 Movie.aggregate([{
-                     $match: {"title": movie.title}
-                 },{
-                     $lookup: {
-                         from: "reviews",
-                         localField: "title",
-                         foreignField: "title",
-                         as: "reviews"
-                     }
-                 }
-                 ]).exec(function(err,movie){
-                     if(err){
-                         return res.json(err);
-                     }else{
-
-                         return res.json(movie);
-                     }
-                 })
-             }
-
-
-
-         })
-
-
-    }
-
-
-    // if no query param, but title is given, it will just find the movie with no review
-    else {
-        Movie.findById(req.params.movieId, function (err, movie) {
+    .get(authJwtController.isAuthenticated, function (req,res) {
+        Movie.findById(req.params.movieId, function (err, movie)  {
             if (err) {
                 res.send(err);
                 console.log(err);
-            } else {
-                res.json(movie);
-
             }
+
+            res.json(movie)
         })
-    }
-});
+    });
+
 
 
 
