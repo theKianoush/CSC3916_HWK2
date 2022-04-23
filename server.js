@@ -236,6 +236,8 @@ router.route('/movies/:movieId')
                     console.log(err);
                 } else {
                     Movie.aggregate([{
+                        $match: {"title": movie.title}
+                    },{
                         $lookup: {
                             from: "reviews",
                             localField: "title",
@@ -248,7 +250,7 @@ router.route('/movies/:movieId')
                             return res.json(err);
                         }else{
 
-                            return res.json(movie);
+                            return res.json({movie});
                         }
                     })
                 }
