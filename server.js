@@ -218,22 +218,31 @@ router.route('/movies/:movieId')
 
 
 
-    //GET = is supposed to get movie with parameter
-    .get(authJwtController.isAuthenticated, function (req,res) {
-        if (req.query && req.query.reviews && req.query.reviews === "true") {
-            Movie.findById(req.params.movieId, function (err, movies) {
-                if (err)  throw err;
-                else {
-                    res.json(movies);
-                }
-            })
-        }
-        else {
-            res.json(reviews);
-        }
-    });
 
-
+//GET = is supposed to get movie with parameter
+.get(authJwtController.isAuthenticated, function (req,res) {
+    if (req.query && req.query.reviews && req.query.reviews === "true") {
+        Movie.findById(req.params.movieId, function (err, movies) {
+            if (err)  throw err;
+            else {
+                Movie.aggregate()
+                    .lookup({from: 'reviews', localField: 'title', foreignField: 'title', as: 'reviews'})
+                    .exec(function (err, movies) {
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            res.json(movies);
+                        }
+                    })
+            }
+        })
+    } else {
+        Movie.findById(req.params.movieId, function (err, movies) {
+            if (err)  throw err;
+            else { res.json(movies);}
+    })
+    }
+});
 
 
 
