@@ -234,18 +234,19 @@ router.route('/movies/:movieId')
                 as: 'reviews'
 
             }
-        }]).exec(function (err, movie) {
+        }]).exec(function (err, res) {
             if (err) {
-                res.json(err);
-            } else {
-                Movie.findById(req.params.movieId, function (err, movie) {
-                    if (err) throw err;
-                    else {
-                        res.json(movie);
-                    }
-                })
+                res.send(err);
             }
+        });
+
+
+        Movie.findById(req.params.movieId, function (err, movie) {
+            if (err)  throw err;
+            else { res.json(movie.title);}
         })
+
+
 
     }
 
