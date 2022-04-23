@@ -250,7 +250,7 @@ router.route('/movies/:movieId')
                              res.json(err);
                         }else{
 
-                             res.json(movie[i]);
+                             res.json(movie[0]);
                         }
                     })
                 }
