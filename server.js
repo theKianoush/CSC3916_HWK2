@@ -217,14 +217,10 @@ router.route('/movies/:movieId')
 
 
 
-    // if we get the query true
-    // then we append review to end of movie
-    // if not just find movie
-    // simple if else goin on here
-
     //GET = is supposed to get movie with parameter
-
-
+    // GET = gets a movie with the movieId parameter
+    // if we have the query param = true, then we will append the review for that movie to the end of the movie
+    // if not we will just get the movie with movieId
 .get(authJwtController.isAuthenticated, function (req,res) {
 
 
@@ -272,7 +268,7 @@ router.route('/movies/:movieId')
                 res.send(err);
                 console.log(err);
             } else {
-                res.json(movie.title);
+                res.json(movie);
 
             }
         })
