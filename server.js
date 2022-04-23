@@ -228,7 +228,7 @@ router.route('/movies/:movieId')
                 Movie.aggregate([
 
                     { $match: {
-                            title: movie.title
+                            "title": movie.title
                         }
 
                         },
@@ -241,11 +241,9 @@ router.route('/movies/:movieId')
                         }}
 
 
-                ], function(err, movie) {
-                    if (err) throw err;
-                    else {res.json(movie)};
-                    // do something with err and result
-                });
+                ]);
+                res.json(movie);
+
             }
         })
     } else {
