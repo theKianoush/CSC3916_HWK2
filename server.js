@@ -219,45 +219,55 @@ router.route('/movies/:movieId')
 
 
 
-//GET = is supposed to get movie with parameter
-.get(authJwtController.isAuthenticated, function (req,res) {
+    // this was working
 
 
+    //GET = is supposed to get movie with parameter
+    // GET = gets a movie with the movieId parameter
+    // if we have the query param = true, then we will append the review for that movie to the end of the movie
+    // if not we will just get the movie with movieId
+    .get(authJwtController.isAuthenticated, function (req,res) {
 
-    if (req.query && req.query.reviews && req.query.reviews === "true") {
-        Movie.aggregate([{
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
 
-            $lookup: {
-                from: 'reviews',
-                localField: 'title',
-                foreignField: 'title',
-                as: 'reviews'
+            Movie.findById(req.params.movieId, function (err, movie) {
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                } else {
+                    Movie.aggregate([{
+                        $lookup: {
+                            from: "reviews",
+                            localField: "title",
+                            foreignField: "title",
+                            as: "reviews"
+                        }
+                    }
+                    ]).exec(function(err,movie){
+                        if(err){
+                            return res.json(err);
+                        }else{
 
-            }
-        }]).exec(function (err, res) {
-            if (err) {
-                res.send(err);
-            }
-        });
+                            return res.json(movie);
+                        }
+                    })
+                }
+            })
+        }
 
+        // if no query param, but title is given, it will just find the movie with no review
+        else {
+            Movie.findById(req.params.movieId, function (err, movie) {
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                } else {
+                    res.json(movie);
 
-        Movie.findById(req.params.movieId, function (err, movie) {
-            if (err)  throw err;
-            else { res.json(movie);}
-        })
-
-
-
-    }
-
-     else {
-        Movie.findById(req.params.movieId, function (err, movie) {
-            if (err)  throw err;
-            else { res.json(movie.title);}
-    })
-    }
-});
-
+                }
+            })
+        }
+    });
 
 
 //-------------------------------------------------------------------------------------------------------
