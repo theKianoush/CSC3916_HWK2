@@ -225,29 +225,34 @@ router.route('/movies/:movieId')
 
 
     if (req.query && req.query.reviews && req.query.reviews === "true") {
-        Movie.findById(req.params.movieId, function (err, movie) {
-            if (err)  throw err;
-            else {
-                Movie.aggregate([{
+        Movie.aggregate([{
 
-                    $lookup: {
-                        from: 'reviews',
-                        localField: 'title',
-                        foreignField: 'title',
-                        as: 'reviews'
-
-                    }
-                }]).exec(function(err, movie){
-                    if(err) { res.json(err);}
-                    else{  res.json(movie);}
-                })
+            $lookup: {
+                from: 'reviews',
+                localField: 'title',
+                foreignField: 'title',
+                as: 'reviews'
 
             }
+        }]).exec(function (err, movie) {
+            if (err) {
+                res.json(err);
+            } else {
+                Movie.findById(req.params.movieId, function (err, movie) {
+                    if (err) throw err;
+                    else {
+                        res.json(movie.year);
+                    }
+                })
+            }
         })
-    } else {
+
+    }
+
+     else {
         Movie.findById(req.params.movieId, function (err, movie) {
             if (err)  throw err;
-            else { res.json(movie.year);}
+            else { res.json(movie.title);}
     })
     }
 });
