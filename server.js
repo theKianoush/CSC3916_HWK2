@@ -247,10 +247,10 @@ router.route('/movies/:movieId')
                     }
                     ]).exec(function(err,movie){
                         if(err){
-                            return res.json(err);
+                             res.json(err);
                         }else{
 
-                            return res.json({movie});
+                             res.json(movie);
                         }
                     })
                 }
