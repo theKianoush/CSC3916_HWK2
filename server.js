@@ -155,7 +155,14 @@ router.route('/movies')
 
 
 
-    // GET = supposed to return all movies when no parameters are entered
+
+
+    // IF we have query params it should return all movies,
+    // and each movie should have its reviews appended to the end of it,
+    // as well as one extra field appended to the end -ratings field
+    // it should also return all movies sorted by average rating in descending order
+
+    // ELSE it will just print all movies in collection
     .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
         if (req.query && req.query.reviews && req.query.reviews === "true") {
 
@@ -173,6 +180,8 @@ router.route('/movies')
                         }
                     }, {
                         $addFields: {avgRating: {$avg: "$reviews.rating"}}
+                    }, {$sort:
+                            {avgRating: -1}
                     }
                     ]).exec(function (err, movies) {
                         if (err) {
@@ -250,11 +259,6 @@ router.route('/movies/:movieId')
 
 
 
-
-    // this was working
-
-
-    //GET = is supposed to get movie with parameter
     // GET = gets a movie with the movieId parameter
     // if we have the query param = true, then we will append the review for that movie to the end of the movie
     // if not we will just get the movie with movieId
@@ -293,7 +297,6 @@ router.route('/movies/:movieId')
             })
         }
 
-        // if no query param, but title is given, it will just find the movie with no review
         else {
             Movie.findById(req.params.movieId, function (err, movie) {
                 if (err) {
@@ -364,77 +367,6 @@ router.route('/reviews')
             });
         }
 
-    })
-
-
-
-
-
-
-
-
-//GET = gets the review with movie appended to the end if you have query parameter and title of movie
-//
-//      gets the movie if you have no query parameter but titles of movie
-    .get(authJwtController.isAuthenticated, function(req, res) {
-
-
-        // if no movie title and no query param
-        if (!req.body.title){
-            res.json({success: false, message: "movie not in database"});
-        }
-
-
-        // if query param is there and title of movie/review, it will find the review and append the movie to the end of it
-        else if (req.query && req.query.reviews && req.query.reviews === "true") {
-
-            Review.find({title: req.body.title}, function (err, review) {
-                if (err) {
-                    res.send(err);
-                    console.log(err);
-                } else {
-                    //res.json({success: true, movie: review});
-
-                    Review.aggregate([{
-                        $match: {"title": req.body.title}
-                    },{
-                        $lookup: {
-                            from: "movies",
-                            localField: "title",
-                            foreignField: "title",
-                            as: "movies"
-                        }
-                    }
-                    ]).exec(function(err,review){
-                        if(err){
-                            return res.json(err);
-                        }else{
-
-                            return res.json({review});
-                        }
-                    })
-
-                }
-            })
-
-        }
-
-
-        // if no query param, but title is given, it will just find the movie with no review
-        else {
-            Movie.find({title: req.body.title}, function (err, movie) {
-                if (err) {
-                    res.send(err);
-                    console.log(err);
-                } else {
-                    res.json({success: true, movie: movie});
-
-
-
-
-                }
-            })
-        }
     });
 
 
