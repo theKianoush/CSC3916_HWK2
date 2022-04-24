@@ -158,8 +158,28 @@ router.route('/movies')
     .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
     Movie.find({}, function (err, movies) {
         if (err) throw err;
-        else
-            res.json(movies);
+        else{
+
+
+            Movie.aggregate([{
+                $lookup: {
+                    from: "reviews",
+                    localField: "title",
+                    foreignField: "title",
+                    as: "reviews"
+                }
+            }
+            ]).exec(function(err,movies){
+                if(err){
+                    res.json(err);
+                }else{
+
+                    res.json(movies);
+                }
+            })
+
+        }
+
     })
 
 });
@@ -228,6 +248,7 @@ router.route('/movies/:movieId')
     // if not we will just get the movie with movieId
     .get(authJwtController.isAuthenticated, function (req,res) {
 
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
 
             Movie.findById(req.params.movieId, function (err, movie) {
                 if (err) {
@@ -246,18 +267,28 @@ router.route('/movies/:movieId')
                     }
                     ]).exec(function(err,movie){
                         if(err){
-                             res.json(err);
+                            res.json(err);
                         }else{
 
-                             res.json(movie[0]);
+                            res.json(movie[0]);
                         }
                     })
                 }
             })
-
+        }
 
         // if no query param, but title is given, it will just find the movie with no review
+        else {
+            Movie.findById(req.params.movieId, function (err, movie) {
+                if (err) {
+                    res.send(err);
+                    console.log(err);
+                } else {
+                    res.json(movie);
 
+                }
+            })
+        }
     });
 
 
