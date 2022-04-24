@@ -157,33 +157,42 @@ router.route('/movies')
 
     // GET = supposed to return all movies when no parameters are entered
     .get(authJwtController.isAuthenticated, function (req,res){           // searches for one
-    Movie.find({}, function (err, movies) {
-        if (err) throw err;
-        else{
+        if (req.query && req.query.reviews && req.query.reviews === "true") {
+
+            Movie.find({}, function (err, movies) {
+                if (err) throw err;
+                else {
 
 
-            Movie.aggregate([{
-                $lookup: {
-                    from: "reviews",
-                    localField: "title",
-                    foreignField: "title",
-                    as: "reviews"
+                    Movie.aggregate([{
+                        $lookup: {
+                            from: "reviews",
+                            localField: "title",
+                            foreignField: "title",
+                            as: "reviews"
+                        }
+                    }, {
+                        $addFields: {avgRating: {$avg: "$reviews.rating"}}
+                    }
+                    ]).exec(function (err, movies) {
+                        if (err) {
+                            res.json(err);
+                        } else {
+
+                            res.json(movies);
+                        }
+                    })
+
                 }
-            },{
-                $addFields: {avgRating: {$avg: "$reviews.rating"}}
-            }
-            ]).exec(function(err,movies){
-                if(err){
-                    res.json(err);
-                }else{
 
-                    res.json(movies);
-                }
             })
-
         }
-
-    })
+        else{
+            Movie.find({}, function(err, movies) {
+                if (err) throw err;
+                else {res.json(movies);}
+            })
+        }
 
 });
 
@@ -269,7 +278,7 @@ router.route('/movies/:movieId')
                         }
                     },{
                         $addFields: {
-                            avgRating: {$avg: "$reviews.rating"}
+                            avgRating: {$avg: "$movie.reviews.rating"}
                         }
                     }
                     ]).exec(function(err,movie){
