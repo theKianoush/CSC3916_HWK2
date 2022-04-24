@@ -343,24 +343,6 @@ router.route('/reviews')
                 }
 
 
-                Review.aggregate([{
-                    $match: {"title": review.title}
-                },{
-                    $lookup: {
-                        from: "movies",
-                        localField: "title",
-                        foreignField: "title",
-                        as: "movies"
-                    }
-                }
-                ]).exec(function(err,review){
-                    if(err){
-                        return res.json(err);
-                    }else{
-
-                        return res.json({message: 'Successfully created new review.', review: review});
-                    }
-                })
 
 
 
