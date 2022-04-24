@@ -323,9 +323,9 @@ router.route('/reviews')
 
 // POST = saves a review and then appends movie to the end of that review
     .post(authJwtController.isAuthenticated, function(req,res)  {
-        if(!req.body.title || !req.body.reviewersname || !req.body.rating || !req.body.comment)
+        if(!req.body.rating || !req.body.comment)
         {
-            res.status(403).json({success: false, message: "title, comment, rating, and reviewersname is required"   });
+            res.status(403).json({success: false, message: "comment and rating is required"    });
         }
         else {
             var review = new Review();
@@ -334,15 +334,17 @@ router.route('/reviews')
             review.rating = req.body.rating;
             review.comment = req.body.comment;
 
-            review.save(function(err){
-                if (err) {
-                    if (err.code == 11000)
+            review.save(function(err, result){
+                if (err){
+                    if (err.code == 11000){
                         return res.json({ success: false, message: 'already exists.'});
-                    else
+                    }
+                    else{
                         return res.json(err.message);
                 }
 
-
+            }
+                else{return res.json(result); }
 
 
 
@@ -350,6 +352,8 @@ router.route('/reviews')
         }
 
     });
+
+
 
 
 
