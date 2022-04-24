@@ -170,7 +170,7 @@ router.route('/movies')
                     as: "reviews"
                 }
             },{
-                $addFields: {avgRating: {$sum: "$rating"}}
+                $addFields: {avgRating: {$avg: "$reviews.rating"}}
             }
             ]).exec(function(err,movies){
                 if(err){
@@ -269,7 +269,7 @@ router.route('/movies/:movieId')
                         }
                     },{
                         $addFields: {
-                            avgRating: {$sum: "$rating"}
+                            avgRating: {$avg: "$reviews.rating"}
                         }
                     }
                     ]).exec(function(err,movie){
