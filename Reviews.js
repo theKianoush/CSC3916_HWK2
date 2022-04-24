@@ -20,7 +20,7 @@ var ReviewSchema = new Schema({                         // all for the reviewer
     reviewersname: {type: String, required: true},             // name of reviewer who i assume is the person loggedin
     comment: {type: String, required: true},                                    // quote/comment to say
     rating: {type: Number, required: true, min: 1, max:5},                     // rating to give the movie
-    imageUrl: {type: String},
+    imageUrl: {type: String, required: true},
     avgRating: {type: [Number]}
    // movieId: {type: Schema.Types.ObjectId, ref: "MovieSchema", required: true},   // this extra
    // userId: {type: Schema.Types.ObjectId, ref: "UserSchema", required: true}   // this extra

@@ -116,8 +116,8 @@ router.route('/movies')
 
     // POST = supposed to save a single movie to database
     .post(authJwtController.isAuthenticated, function (req, res) {
-        if (!req.body.title || !req.body.year || !req.body.genre || !req.body.actors ) {
-            res.json({success: false, message: "An input should contian: Title, year released, Genre, and 3 Actors"});
+        if (!req.body.title || !req.body.year || !req.body.genre || !req.body.actors || !req.body.imageUrl  ) {
+            res.json({success: false, message: "An input should contian: Title, year released, Genre, imageUrl, and 3 Actors"});
         } else {
 
             var movie = new Movie();
