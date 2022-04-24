@@ -228,7 +228,6 @@ router.route('/movies/:movieId')
     // if not we will just get the movie with movieId
     .get(authJwtController.isAuthenticated, function (req,res) {
 
-        if (req.query && req.query.reviews && req.query.reviews === "true") {
 
             Movie.findById(req.params.movieId, function (err, movie) {
                 if (err) {
@@ -255,20 +254,10 @@ router.route('/movies/:movieId')
                     })
                 }
             })
-        }
+
 
         // if no query param, but title is given, it will just find the movie with no review
-        else {
-            Movie.findById(req.params.movieId, function (err, movie) {
-                if (err) {
-                    res.send(err);
-                    console.log(err);
-                } else {
-                    res.json(movie);
 
-                }
-            })
-        }
     });
 
 
